@@ -651,8 +651,15 @@ def home_page():
     """
     Halaman beranda yang menarik
     """
-    st.image((os.path.join(os.path.dirname(__file__), 'logo/logo.png')), width=150)  # Ganti dengan path logo Anda
-    st.title("Sistem Aksara Bima")
+    logo_url = (os.path.join(os.path.dirname(__file__), 'logo/logo.png')  # Ganti dengan URL logo Anda
+    col1, col2 = st.columns([1, 5])  # Membuat dua kolom, kolom pertama lebih kecil untuk logo
+    
+    with col1:
+        st.image(logo_url, width=120)  # Menampilkan logo dari URL
+    
+    with col2:
+        st.title("Aplikasi Pengenalan Aksara Bima")  # Menampilkan judul
+    
     st.markdown("---")
     
     # Hero section
