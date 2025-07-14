@@ -651,7 +651,7 @@ def home_page():
     """
     Halaman beranda yang menarik
     """
-    logo_url = (os.path.join(os.path.dirname(__file__), 'logo/logo.png')  # Ganti dengan URL logo Anda
+    logo_url = os.path.join(os.path.dirname(__file__), 'logo/logo.png')  # Ganti dengan URL logo Anda
     col1, col2 = st.columns([1, 5])  # Membuat dua kolom, kolom pertama lebih kecil untuk logo
     
     with col1:
