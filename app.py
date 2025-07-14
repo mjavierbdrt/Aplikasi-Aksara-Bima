@@ -37,7 +37,7 @@ st.set_page_config(
 DATASET_PATH = os.path.join(os.path.dirname(__file__), 'dataset_aksara_bima')
 MODEL_PATH = os.path.join(os.path.dirname(__file__), 'models/aksara_bima_model_A.h5')
 TESSDATA_PATH = os.path.join(os.path.dirname(__file__), 'tessdata')
-TESSERACT_CMD = '/usr/bin/tesseract'
+TESSERACT_CMD = 'tesseract'
 
 os.environ['TESSDATA_PREFIX'] = TESSDATA_PATH
 pytesseract.pytesseract.tesseract_cmd = TESSERACT_CMD
@@ -77,7 +77,7 @@ def setup_tesseract():
     """
     try:
         # Set path untuk tesseract
-        pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
+        pytesseract.pytesseract.tesseract_cmd = TESSERACT_CMD
         
         # Konfigurasi untuk OCR aksara Bima
         # Menggunakan aksarareal.traineddata yang sudah ada
@@ -537,7 +537,7 @@ def check_system_requirements():
     requirements = {
         'dataset': os.path.exists(DATASET_PATH),
         'model': os.path.exists(MODEL_PATH),
-        'tesseract': os.path.exists(TESSERACT_PATH)
+        'tesseract': os.path.exists(TESSERACT_CMD)
     }
     
     return requirements
@@ -1010,7 +1010,7 @@ def ocr_page():
     
     if tesseract_config is None:
         st.error("Tesseract tidak tersedia. Pastikan path sudah benar.")
-        st.code(f"Expected path: {TESSERACT_PATH}")
+        st.code(f"Expected path: {TESSERACT_CMD}")
         return
     
     st.markdown("""
@@ -1181,10 +1181,10 @@ def info_page():
     with col3:
         if requirements['tesseract']:
             st.success("✅ Tesseract tersedia")
-            st.code(f"Path: {TESSERACT_PATH}")
+            st.code(f"Path: {TESSERACT_CMD}")
         else:
             st.error("❌ Tesseract tidak ditemukan")
-            st.code(f"Expected: {TESSERACT_PATH}")
+            st.code(f"Expected: {TESSERACT_CMD}")
     
     st.markdown("---")
     
