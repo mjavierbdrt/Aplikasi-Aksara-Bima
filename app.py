@@ -29,6 +29,46 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+st.markdown("""
+<style>
+    .main-header {
+        text-align: center;
+        padding: 1rem 0;
+        background: linear-gradient(90deg, #1f77b4, #ff7f0e);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 2rem;
+    }
+    
+    body {
+        background-color: #ffffff;
+    }
+
+    .feature-card {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #e9ecef;
+        margin: 0.5rem 0;
+    }
+
+    .stButton > button {
+        width: 100%;
+        margin: 0.25rem 0;
+    }
+
+    .status-success {
+        color: #28a745;
+    }
+
+    .status-error {
+        color: #dc3545;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # ===============================
 # KONFIGURASI PATH
 # ===============================
@@ -611,7 +651,8 @@ def home_page():
     """
     Halaman beranda yang menarik
     """
-    st.title(" Sistem Aksara Bima Lengkap")
+    st.image((os.path.join(os.path.dirname(__file__), 'logo/logo.png')), width=150)  # Ganti dengan path logo Anda
+    st.title("Sistem Aksara Bima")
     st.markdown("---")
     
     # Hero section
@@ -619,14 +660,14 @@ def home_page():
     
     with col1:
         st.markdown("""
-        ## 🎯 Selamat Datang di Sistem Aksara Bima!
+        ## 🎯 Selamat Datang di Aplikasi Pengenalan Aksara Bima!
         
         Aplikasi terintegrasi yang menyediakan tiga fitur utama untuk membantu Anda
-        bekerja dengan aksara Bima:
+        Mengenal aksara Bima:
         
-        - **🔤 Transliterasi**: Ubah teks Latin menjadi aksara Bima
+        - **🔤 Transliterasi**: Mengubah teks Latin menjadi teks aksara Bima
         - **🎯 Klasifikasi**: Identifikasi karakter aksara Bima dari gambar
-        - **📖 OCR**: Ekstrak teks dari gambar aksara Bima
+        - **📖 OCR**: Mengubah Teks Aksara bim ke teks latin
         """)
     
     with col2:
