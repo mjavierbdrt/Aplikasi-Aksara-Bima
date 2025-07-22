@@ -75,7 +75,7 @@ st.markdown("""
 
 # Path direktori yang disesuaikan dengan sistem user
 DATASET_PATH = os.path.join(os.path.dirname(__file__), 'dataset_aksara_bima')
-MODEL_PATH = os.path.join(os.path.dirname(__file__), 'models/aksara_bima_model_m.h5')
+MODEL_PATH = os.path.join(os.path.dirname(__file__), 'models/aksara_bima_m.h5')
 TESSDATA_PATH = os.path.join(os.path.dirname(__file__), 'tessdata')
 TESSERACT_CMD = 'tesseract'
 
