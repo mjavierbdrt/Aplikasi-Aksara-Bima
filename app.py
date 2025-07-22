@@ -922,7 +922,7 @@ def classification_page():
             # Canvas untuk menggambar
             canvas_result = st_canvas(
                 fill_color="rgba(255, 255, 255, 0.0)",  # Transparent fill
-                stroke_width=10,  # Stroke lebih tebal untuk clarity
+                stroke_width=15,  # Stroke lebih tebal untuk clarity
                 stroke_color="black",
                 background_color="white",
                 width=400,
