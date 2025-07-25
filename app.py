@@ -61,12 +61,8 @@ st.markdown("""
     line-height: 1 !important;
 }
 
-button[data-testid="stSidebarCollapseControl"] {
-    font-size: 2rem !important;
-    width: 50px !important;
-    height: 50px !important;
-    border-radius: 10px !important;
-}
+.css-1v0mbdj {
+        font-size: 32px; /* Mengubah ukuran font ikon */
     
     body {
         background-color: #ffffff;
