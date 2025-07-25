@@ -947,7 +947,26 @@ def classification_page():
     with st.expander("🖼️ Lihat Gambar Daftar Karakter Aksara Bima"):
         # Path untuk gambar daftar karakter
         daftar_karakter_path = os.path.join(os.path.dirname(__file__), 'assets/daftar_karakter_utama.png')
-        
+
+        # Cek apakah file gambar ada
+        if os.path.exists(daftar_karakter_path):
+            try:
+                # Load dan tampilkan gambar daftar karakter
+                daftar_karakter_img = Image.open(daftar_karakter_path)
+                st.image(
+                    daftar_karakter_img, 
+                    caption="📋 Daftar Lengkap Karakter Aksara Bima yang Didukung Model", 
+                    use_container_width=True
+                )
+                st.info("💡 **Tips:** Gunakan gambar di atas sebagai referensi saat menggambar atau mengupload karakter aksara Bima")
+            except Exception as e:
+                st.error(f"Gagal memuat gambar daftar karakter: {e}")
+                # Fallback ke daftar teks jika gambar gagal dimuat
+                st.markdown("**Daftar karakter yang didukung (mode teks):**")
+                _show_character_text_list()
+        else:
+            st.warning(f"⚠️ Gambar daftar karakter tidak ditemukan di: `{daftar_karakter_path}`")
+            
     with st.expander("📋 Lihat Daftar Karakter yang Didukung"):
         col1, col2, col3 = st.columns(3)
         
