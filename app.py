@@ -40,6 +40,10 @@ st.markdown("""
         font-weight: bold;
         margin-bottom: 2rem;
     }
+    
+    body {
+        background-color: #ffffff;
+    }
 
     .feature-card {
         background-color: #f8f9fa;
