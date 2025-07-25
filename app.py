@@ -10,6 +10,7 @@ from streamlit_drawable_canvas import st_canvas
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 import pytesseract
+import tempfile
 
 # Untuk fitur cropping (opsional)
 try:
@@ -18,7 +19,9 @@ try:
 except ImportError:
     CROPPER_AVAILABLE = False
 
-# Konfigurasi halaman
+# ===============================
+# KONFIGURASI APLIKASI
+# ===============================
 st.set_page_config(
     page_title="Sistem Aksara Bima",
     page_icon="🔤",
@@ -37,20 +40,23 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ===============================
-# KONFIGURASI PATH (LEBIH PORTABEL)
+# KONFIGURASI PATH & VARIABEL
 # ===============================
 BASE_DIR = os.path.dirname(__file__)
 DATASET_PATH = os.path.join(BASE_DIR, 'dataset_aksara_bima')
 MODEL_PATH = os.path.join(BASE_DIR, 'models', 'aksara_bima_m.h5')
+LOGO_PATH = os.path.join(BASE_DIR, 'logo', 'logo.png')
 TESSDATA_PATH = os.path.join(BASE_DIR, 'tessdata')
-TESSERACT_CMD = 'tesseract' 
+TESSERACT_CMD = 'tesseract'
 
-# Atur environment variable untuk Tesseract
-os.environ['TESSDATA_PREFIX'] = TESSDATA_PATH
-pytesseract.pytesseract.tesseract_cmd = TESSERACT_CMD
+try:
+    os.environ['TESSDATA_PREFIX'] = TESSDATA_PATH
+    pytesseract.pytesseract.tesseract_cmd = TESSERACT_CMD
+except Exception:
+    pass
 
-# Konstanta karakter Bima (sudah dirapikan)
-BIMA_CHARACTERS = [
+# Konstanta karakter (sudah dirapikan)
+BIMA_CHARACTERS = sorted(list(set([
     'A', 'BA', 'BE', 'BI', 'BO', 'BU', 'CA', 'CE', 'CI', 'CO', 'CU', 'DA', 'DE',
     'DI', 'DO', 'DU', 'E', 'FA', 'FE', 'FI', 'FO', 'FU', 'GA', 'GE', 'GI', 'GO',
     'GU', 'HA', 'HE', 'HI', 'HO', 'HU', 'I', 'JA', 'JE', 'JI', 'JO', 'JU', 'KA',
@@ -62,75 +68,57 @@ BIMA_CHARACTERS = [
     'TO', 'TU', 'U', 'WA', 'WE', 'WI', 'WO', 'WU', 'YA', 'YE', 'YI', 'YO', 'YU',
     'MBA', 'MBE', 'MBI', 'MBO', 'MBU', 'NDA', 'NDE', 'NDI', 'NDO', 'NDU',
     'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'R', 'S', 'T', 'W', 'Y', 'NG'
-]
+])), key=len, reverse=True)
 
-# Konstanta karakter untuk klasifikasi model
 CLASSIFICATION_CHARACTERS = [
     'A', 'BA', 'CA', 'DA', 'FA', 'GA', 'HA', 'JA',
     'KA', 'LA', 'MA', 'MPA', 'NA', 'NCA', 'NGA',
     'NTA', 'PA', 'RA', 'SA', 'TA', 'WA', 'YA'
 ]
 
-# Inisialisasi session state untuk navigasi
 if 'current_page' not in st.session_state:
     st.session_state.current_page = "home"
 
 # ===============================
-# SETUP & LOADING FUNCTIONS
+# FUNGSI-FUNGSI UTAMA (LOGIKA APLIKASI)
 # ===============================
 
 @st.cache_data
 def load_character_images():
-    """Load gambar karakter dari dataset."""
+    """Memuat gambar karakter dari dataset."""
     char_images = {}
-    if not os.path.exists(DATASET_PATH):
-        st.error(f"Direktori dataset tidak ditemukan: {DATASET_PATH}")
-        return char_images
-    try:
-        for folder_name in sorted(os.listdir(DATASET_PATH)):
-            folder_path = os.path.join(DATASET_PATH, folder_name)
-            if os.path.isdir(folder_path):
-                image_files = glob.glob(os.path.join(folder_path, '*'))
-                image_files = [f for f in image_files if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
-                if image_files:
-                    try:
-                        img = Image.open(image_files[0])
-                        char_images[folder_name] = img
-                    except Exception:
-                        pass
-        return char_images
-    except Exception as e:
-        st.error(f"Error memuat dataset: {e}")
-        return {}
+    if not os.path.exists(DATASET_PATH): return {}
+    for folder_name in sorted(os.listdir(DATASET_PATH)):
+        folder_path = os.path.join(DATASET_PATH, folder_name)
+        if os.path.isdir(folder_path):
+            try:
+                img_path = glob.glob(os.path.join(folder_path, '*'))[0]
+                char_images[folder_name] = Image.open(img_path)
+            except (IndexError, OSError):
+                pass
+    return char_images
 
 @st.cache_resource
 def load_classification_model():
-    """Load model klasifikasi tanpa menampilkan pesan di UI."""
+    """Memuat model klasifikasi tanpa menampilkan pesan di UI."""
     if not os.path.exists(MODEL_PATH):
         return None
     try:
-        model = load_model(MODEL_PATH)
-        return model
+        return load_model(MODEL_PATH)
     except Exception:
         return None
 
-# ===============================
-# CORE LOGIC FUNCTIONS
-# ===============================
-
 def transliterate_to_bima(text):
-    """Transliterasi teks Latin ke aksara Bima (longest match first)."""
-    sorted_chars = sorted(list(set(BIMA_CHARACTERS)), key=len, reverse=True)
+    """Mengubah teks Latin menjadi daftar karakter Aksara Bima."""
     text = text.upper().strip()
-    result = []
-    i = 0
+    result, i = [], 0
     while i < len(text):
-        if text[i] == ' ':
-            result.append(' ')
+        if text[i].isspace():
+            if result and result[-1] != ' ': result.append(' ')
             i += 1
             continue
         matched = False
-        for char in sorted_chars:
+        for char in BIMA_CHARACTERS:
             if text[i:].startswith(char):
                 result.append(char)
                 i += len(char)
@@ -141,322 +129,269 @@ def transliterate_to_bima(text):
             i += 1
     return result
 
-def create_character_image(char, char_images, width=80, height=80):
-    """Membuat gambar karakter dari dataset atau placeholder."""
-    if char in char_images:
-        img = char_images[char].copy()
-        img = img.resize((width, height), Image.Resampling.LANCZOS)
-        if img.mode != 'RGB':
-            img = img.convert('RGB')
-        return img
-    
-    img = Image.new('RGB', (width, height), color=(255, 255, 255))
-    draw = ImageDraw.Draw(img)
-    try:
-        font = ImageFont.load_default(size=20)
-        bbox = draw.textbbox((0, 0), char, font=font)
-        text_width, text_height = bbox[2] - bbox[0], bbox[3] - bbox[1]
-        x, y = (width - text_width) // 2, (height - text_height) // 2
-        draw.text((x, y), f"{char}\n(x)", fill='red', font=font, align="center")
-    except Exception:
-        draw.text((10, 10), f"{char}\n(x)", fill='red')
-    return img
-
 def create_full_text_image(result, char_images, char_spacing=5, word_spacing=20):
-    """Membuat gambar untuk seluruh teks yang telah ditransliterasi."""
-    images = []
+    """Membuat satu gambar dari hasil transliterasi (versi detail)."""
+    all_images = []
     for char in result:
         if char == ' ':
-            if images:
-                images.append(Image.new('RGB', (word_spacing, 80), color=(255, 255, 255)))
+            if all_images:
+                space_img = Image.new('RGB', (word_spacing, 80), 'white')
+                all_images.append(space_img)
         elif not char.startswith('['):
-            images.append(create_character_image(char, char_images))
-    if not images: return None
+            img = char_images.get(char)
+            if img:
+                all_images.append(img.resize((80, 80), Image.Resampling.LANCZOS))
+    if not all_images: return None
     
-    total_width = sum(img.width for img in images) + char_spacing * (len(images) - 1)
-    max_height = max(img.height for img in images)
-    
-    combined = Image.new('RGB', (total_width, max_height), color=(255, 255, 255))
+    total_width = sum(img.width for img in all_images)
+    if len(all_images) > 1:
+        char_spacings = 0
+        for i, img in enumerate(all_images):
+            if i > 0 and all_images[i-1].width != word_spacing:
+                char_spacings += char_spacing
+        total_width += char_spacings
+
+    combined = Image.new('RGB', (total_width, 80), 'white')
     x_offset = 0
-    for img in images:
+    for i, img in enumerate(all_images):
         combined.paste(img, (x_offset, 0))
-        x_offset += img.width + char_spacing
+        x_offset += img.width
+        if i < len(all_images) - 1 and all_images[i].width != word_spacing:
+            x_offset += char_spacing
+            
     return combined
 
 def preprocess_image(image_input):
-    """Preprocess gambar (dari PIL Image/Numpy array) untuk model."""
+    """Mempersiapkan gambar untuk input model klasifikasi."""
     try:
         if isinstance(image_input, Image.Image):
-            if image_input.mode != 'RGB':
-                image_input = image_input.convert('RGB')
-            img_array = np.array(image_input)
-        else: # Asumsikan numpy array dari canvas
-            if image_input.shape[-1] == 4: # RGBA
+            img_array = np.array(image_input.convert('RGB'))
+        else: # Dari Canvas (numpy array)
+            if image_input.shape[-1] == 4: # RGBA -> RGB
                 alpha = image_input[:, :, 3:4] / 255.0
                 bg = np.ones_like(image_input[:, :, :3]) * 255
                 img_array = (alpha * image_input[:, :, :3] + (1 - alpha) * bg).astype(np.uint8)
             else:
                 img_array = image_input
-
         resized = cv2.resize(img_array, (224, 224))
-        normalized = resized.astype('float32') / 255.0
-        return np.expand_dims(normalized, axis=0)
-    except Exception as e:
-        st.error(f"Error saat memproses gambar: {e}")
+        return np.expand_dims(resized.astype('float32') / 255.0, axis=0)
+    except Exception:
         return None
 
-def classify_character(image_input, model):
-    """Klasifikasi karakter, mengembalikan prediksi teratas dan semua prediksi."""
-    if model is None: return None, 0.0, None
-    try:
-        predictions = model.predict(image_input, verbose=0)[0]
-        idx = np.argmax(predictions)
-        char = CLASSIFICATION_CHARACTERS[idx] if idx < len(CLASSIFICATION_CHARACTERS) else "Unknown"
-        conf = float(predictions[idx])
-        return char, conf, predictions
-    except Exception as e:
-        st.error(f"Error pada saat klasifikasi: {e}")
-        return None, 0.0, None
-
-def ocr_bima_to_latin(image):
-    """OCR Aksara Bima ke Latin dari objek gambar PIL."""
+def ocr_image(image):
+    """Menjalankan OCR pada gambar."""
     try:
         config = f'--tessdata-dir "{TESSDATA_PATH}" -l aksaralengkap --psm 8'
         return pytesseract.image_to_string(image, config=config).strip()
-    except Exception as e:
-        st.error(f"Error saat proses OCR: {e}")
+    except Exception:
         return ""
 
+def image_to_base64(img):
+    """Konversi gambar PIL ke base64 untuk diunduh."""
+    buffered = io.BytesIO()
+    img.save(buffered, format="PNG")
+    return base64.b64encode(buffered.getvalue()).decode()
+
 # ===============================
-# UI COMPONENTS & PAGES
+# HALAMAN-HALAMAN APLIKASI (UI)
 # ===============================
-
-def sidebar_navigation():
-    """Sidebar dengan navigasi dan status sistem."""
-    st.sidebar.title("🔤 Sistem Aksara Bima")
-    st.sidebar.markdown("---")
-    
-    st.sidebar.markdown("### Fitur Utama")
-    if st.sidebar.button("🏠 Beranda", use_container_width=True):
-        st.session_state.current_page = "home"
-    if st.sidebar.button("🔤 Transliterasi", use_container_width=True):
-        st.session_state.current_page = "transliterasi"
-    if st.sidebar.button("🎯 Klasifikasi", use_container_width=True):
-        st.session_state.current_page = "klasifikasi"
-    if st.sidebar.button("📖 OCR", use_container_width=True):
-        st.session_state.current_page = "ocr"
-    
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("### 📊 Status Sistem")
-    
-    # Cek status sekali saja
-    model_ok = load_classification_model() is not None
-    dataset_ok = os.path.exists(DATASET_PATH)
-    tesseract_ok = True
-    try:
-        pytesseract.get_tesseract_version()
-    except Exception:
-        tesseract_ok = False
-
-    st.sidebar.success("✅ Dataset Siap") if dataset_ok else st.sidebar.error("❌ Dataset Bermasalah")
-    st.sidebar.success("✅ Model Siap") if model_ok else st.sidebar.error("❌ Model Tidak Ditemukan")
-    st.sidebar.success("✅ OCR (Tesseract) Siap") if tesseract_ok else st.sidebar.error("❌ OCR Bermasalah")
-
 
 def home_page():
     """Halaman Beranda."""
-    logo_path = os.path.join(BASE_DIR, 'logo', 'logo.png')
-    col1, col2 = st.columns([1, 6])
-    if os.path.exists(logo_path):
+    col1, col2 = st.columns([1, 6], gap="medium")
+    if os.path.exists(LOGO_PATH):
         with col1:
-            st.image(logo_path, width=120)
+            st.image(LOGO_PATH, width=120)
     with col2:
         st.title("Aplikasi Pengenalan Aksara Bima")
-        st.markdown("Sebuah alat bantu untuk transliterasi, klasifikasi, dan OCR Aksara Bima.")
+        st.markdown("Sebuah alat bantu digital untuk melestarikan, mempelajari, dan menggunakan Aksara Bima.")
     st.markdown("---")
 
-    with st.expander("📖 Panduan Penggunaan Aplikasi", expanded=True):
+    with st.expander("📖 **Panduan Penggunaan Aplikasi (Klik untuk Buka)**", expanded=True):
         st.markdown("""
-        Selamat datang! Berikut adalah panduan singkat untuk menggunakan setiap fitur.
-        - **Transliterasi**: Ketik teks Latin, lalu klik tombol "Transliterasi" untuk mengubahnya menjadi gambar Aksara Bima.
-        - **Klasifikasi**: Gambar atau unggah satu karakter Aksara Bima untuk mengetahui namanya.
-        - **OCR**: Unggah gambar berisi tulisan Aksara Bima (satu baris, sedikit karakter) untuk mengubahnya menjadi teks Latin.
-        """)
+        Selamat datang! Aplikasi ini memiliki tiga fitur utama. Ikuti langkah-langkah di bawah ini untuk setiap fitur.
+        
+        ---
+        
+        ### 1. 🔤 Transliterasi (Mengubah Teks Latin ke Tulisan Aksara Bima)
+        Gunakan fitur ini untuk melihat bagaimana sebuah kata atau kalimat Latin ditulis dalam Aksara Bima.
+        1.  **Pilih Fitur**: Klik **"Transliterasi"** di sidebar.
+        2.  **Masukkan Teks**: Ketik kata atau kalimat yang ingin Anda ubah di kotak teks.
+        3.  **Proses**: Klik tombol **"Transliterasi"**.
+        4.  **Lihat Hasil**: Aplikasi akan menampilkan tulisan Aksara Bima dalam bentuk gambar yang bisa diunduh.
+        
+        ---
+        
+        ### 2. 🎯 Klasifikasi (Mengenali Satu Karakter Aksara Bima)
+        Gunakan fitur ini jika Anda memiliki gambar satu karakter Aksara Bima dan ingin tahu namanya.
+        1.  **Pilih Fitur**: Klik **"Klasifikasi"** di sidebar.
+        2.  **Pilih Metode Input**:
+            * **Gambar di Kanvas**: Pilih opsi ini untuk menggambar karakter secara langsung di layar.
+            * **Unggah Gambar**: Pilih opsi ini untuk menggunakan file gambar dari komputer Anda.
+        3.  **Proses**: Klik tombol **"Klasifikasi Sekarang"**.
+        4.  **Lihat Hasil**: Aplikasi akan menampilkan nama karakter yang paling cocok beserta tingkat akurasinya.
+            
+        ---
 
-    st.markdown("### 🚀 Fitur Utama")
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.markdown("#### 🔤 Transliterasi")
-        st.markdown("Ubah teks Latin menjadi Aksara Bima secara visual.")
-        if st.button("Mulai Transliterasi"):
-            st.session_state.current_page = "transliterasi"
-            st.rerun()
-    with col2:
-        st.markdown("#### 🎯 Klasifikasi")
-        st.markdown("Kenali karakter Aksara Bima dari gambar atau tulisan tangan.")
-        if st.button("Mulai Klasifikasi"):
-            st.session_state.current_page = "klasifikasi"
-            st.rerun()
-    with col3:
-        st.markdown("#### 📖 OCR")
-        st.markdown("Ekstrak teks dari gambar Aksara Bima ke tulisan Latin.")
-        if st.button("Mulai OCR"):
-            st.session_state.current_page = "ocr"
-            st.rerun()
+        ### 3. 📖 OCR (Mengubah Gambar Tulisan Aksara Bima ke Teks Latin)
+        Gunakan fitur ini untuk "membaca" tulisan Aksara Bima dari sebuah gambar.
+        1.  **Pilih Fitur**: Klik **"OCR"** di sidebar.
+        2.  **Unggah Gambar**: Pilih file gambar yang berisi tulisan Aksara Bima. **Penting**: Untuk hasil terbaik, gunakan gambar yang jelas, berisi **satu baris tulisan** dengan **maksimal 8 karakter**.
+        3.  **Proses**: Klik tombol **"Proses OCR Sekarang"**.
+        4.  **Lihat Hasil**: Teks Latin hasil pembacaan akan muncul di kotak teks.
+        """)
+        
     st.markdown("---")
+    st.markdown("### 🚀 Pilih Fitur")
+    cols = st.columns(3)
+    if cols[0].button("Mulai Transliterasi", use_container_width=True): st.session_state.current_page = "transliterasi"
+    if cols[1].button("Mulai Klasifikasi", use_container_width=True): st.session_state.current_page = "klasifikasi"
+    if cols[2].button("Mulai OCR", use_container_width=True): st.session_state.current_page = "ocr"
 
 def transliteration_page():
     """Halaman Transliterasi."""
-    st.header("🔤 Transliterasi Latin → Aksara Bima")
+    st.header("🔤 Transliterasi: Latin → Aksara Bima")
     st.markdown("---")
     char_images = load_character_images()
     
-    input_text = st.text_area("Masukkan teks Latin:", placeholder="Contoh: NDAI DOU MBOJO", height=100)
+    input_text = st.text_area("Masukkan teks Latin di sini:", placeholder="Contoh: NDAI DOU MBOJO", height=100)
     
+    # --- BLOK KODE YANG DIKEMBALIKAN SESUAI PERMINTAAN ---
     if st.button("🔄 Transliterasi", type="primary"):
         if input_text.strip():
             result = transliterate_to_bima(input_text)
+            
             st.markdown("---")
-            st.markdown("#### Hasil Transliterasi")
-            
-            # Tampilkan pemecahan karakter
-            result_text = " + ".join([f"'{c}'" if c != ' ' else 'SPASI' for c in result])
-            st.markdown(f"**Pemecahan Karakter:** `{result_text}`")
-            
+            st.markdown("### 📝 Hasil Transliterasi")
+            result_text = " + ".join([char if char != ' ' else '|' for char in result]).replace(' | ', '   ').replace('|+|', ' | ')
+            st.markdown("**Pemecahan Karakter:**")
+            st.code(result_text)
+
             full_image = create_full_text_image(result, char_images)
+            
             if full_image:
-                st.image(full_image, caption=f"Gambar untuk: {input_text}")
-                buffered = io.BytesIO()
-                full_image.save(buffered, format="PNG")
-                st.download_button("📥 Download Gambar", data=buffered.getvalue(), file_name="transliterasi.png", mime="image/png")
-            else:
-                st.error("Gagal membuat gambar. Pastikan input tidak kosong.")
-        else:
-            st.warning("Mohon masukkan teks terlebih dahulu.")
+                st.markdown("### 🖼️ Hasil Lengkap (Gambar)")
+                st.image(full_image, caption=f"Transliterasi untuk: {input_text}", use_column_width=True)
+                
+                img_base64 = image_to_base64(full_image)
+                st.download_button(
+                    label="📥 Download Gambar",
+                    data=base64.b64decode(img_base64),
+                    file_name=f"transliterasi_bima_{input_text[:20].replace(' ', '_')}.png",
+                    mime="image/png"
+                )
+    # --- AKHIR BLOK KODE ---
 
 def classification_page():
-    """Halaman Klasifikasi."""
-    st.header("🎯 Klasifikasi Karakter Aksara Bima")
+    """Halaman Klasifikasi Karakter."""
+    st.header("🎯 Klasifikasi: Kenali Karakter Aksara Bima")
     st.markdown("---")
     model = load_classification_model()
-    char_images = load_character_images()
 
-    if model is None:
-        st.error("Model klasifikasi tidak tersedia. Fitur ini tidak dapat digunakan.")
+    if not model:
+        st.error("Model klasifikasi tidak dapat dimuat. Fitur ini tidak tersedia.")
         return
-
-    st.info(f"Model ini dapat mengklasifikasikan **{len(CLASSIFICATION_CHARACTERS)} karakter** dasar.")
-
-    # --- PERUBAHAN DI SINI: Menambahkan kembali daftar karakter ---
+        
+    st.info(f"Model ini dapat mengenali **{len(CLASSIFICATION_CHARACTERS)} karakter** dasar.")
     with st.expander("📋 Lihat Daftar Karakter yang Didukung"):
-        cols = st.columns(3)
-        # Loop untuk membagi karakter ke dalam 3 kolom
+        cols = st.columns(4)
         for i, char in enumerate(CLASSIFICATION_CHARACTERS):
-            with cols[i % 3]:
-                st.write(f"• {char}")
-    # -----------------------------------------------------------
+            with cols[i % 4]:
+                st.write(f"• **{char}**")
 
-    input_method = st.radio("Pilih metode input:", ["🎨 Gambar di Kanvas", "📁 Unggah Gambar"], horizontal=True)
-
-    final_image = None
+    input_method = st.radio("Pilih Metode Input:", ["🎨 Gambar di Kanvas", "📁 Unggah Gambar"], horizontal=True)
+    
+    image_to_process = None
     if input_method == "🎨 Gambar di Kanvas":
-        st.markdown("#### Gambar satu karakter di kanvas bawah ini:")
-        canvas_result = st_canvas(
-            stroke_width=15, stroke_color="black", background_color="white",
-            height=300, width=300, drawing_mode="freedraw", key="canvas"
-        )
-        if canvas_result.image_data is not None and np.any(canvas_result.image_data[:, :, 3] > 0):
-            final_image = canvas_result.image_data
-            st.image(final_image, caption="Gambar Anda", width=200)
-
-    else: # Unggah Gambar
+        st.markdown("Gambar **satu** karakter di dalam kotak putih di bawah ini:")
+        canvas_result = st_canvas(stroke_width=15, stroke_color="black", background_color="white", height=300, width=300, key="canvas")
+        if canvas_result.image_data is not None and canvas_result.image_data.any():
+            image_to_process = canvas_result.image_data
+    else:
         uploaded_file = st.file_uploader("Pilih file gambar (berisi satu karakter):", type=['png', 'jpg', 'jpeg'])
         if uploaded_file:
-            original_image = Image.open(uploaded_file)
-            image_to_process = original_image
-            st.image(original_image, "Gambar Asli", use_container_width=False, width=250)
+            image_to_process = Image.open(uploaded_file)
+            st.image(image_to_process, "Gambar yang diunggah:", width=250)
             
-            if CROPPER_AVAILABLE:
-                if st.checkbox("✂️ Crop gambar untuk hasil lebih baik"):
-                    cropped_image = st_cropper(original_image, realtime_update=True, box_color='#FF0004')
-                    if cropped_image:
-                        st.image(cropped_image, "Hasil Crop", use_container_width=False, width=250)
-                        image_to_process = cropped_image
-            final_image = image_to_process
-
-    if final_image is not None:
-        if st.button("🔍 Klasifikasi Sekarang", type="primary"):
-            processed_image_for_model = preprocess_image(final_image)
-            if processed_image_for_model is not None:
+    if image_to_process is not None:
+        if st.button("🔍 Klasifikasi Sekarang", type="primary", use_container_width=True):
+            processed_image = preprocess_image(image_to_process)
+            if processed_image is not None:
                 with st.spinner("Menganalisis..."):
-                    char, conf, all_preds = classify_character(processed_image_for_model, model)
+                    predictions = model.predict(processed_image, verbose=0)[0]
+                    idx = np.argmax(predictions)
+                    char = CLASSIFICATION_CHARACTERS[idx]
+                    conf = predictions[idx]
                 
-                st.success(f"Hasil Prediksi: **{char}**")
+                st.success(f"### Prediksi: **{char}**")
                 st.metric("Tingkat Keyakinan", f"{conf:.2%}")
-                st.progress(conf)
-                
-                if char in char_images:
-                    st.markdown("##### Contoh Karakter dari Dataset:")
-                    st.image(char_images[char], width=150)
+                st.progress(float(conf))
+                # --- FITUR TOP 3 PREDIKSI DIHAPUS SESUAI PERMINTAAN ---
 
 def ocr_page():
     """Halaman OCR."""
-    st.header("📖 OCR Aksara Bima → Latin")
+    st.header("📖 OCR: Gambar Aksara Bima → Teks Latin")
     st.markdown("---")
-
+    
     st.warning(
-        "⚠️ **Perhatian:** Untuk hasil OCR yang lebih akurat, "
-        "mohon unggah gambar yang hanya berisi **satu baris** tulisan "
-        "dengan jumlah **maksimal 8 karakter**."
+        "⚠️ **Penting:** Untuk hasil terbaik, unggah gambar yang jelas berisi **satu baris** dengan **maksimal 8 karakter**."
     )
-
-    uploaded_file = st.file_uploader(
-        "Upload gambar aksara Bima (satu baris, maks. 8 karakter):",
-        type=['png', 'jpg', 'jpeg']
-    )
-
+    
+    uploaded_file = st.file_uploader("Unggah gambar Aksara Bima:", type=['png', 'jpg', 'jpeg'])
+    
     if uploaded_file:
-        original_image = Image.open(uploaded_file)
-        image_to_process = original_image
-        st.image(original_image, caption="Gambar Asli", use_container_width=False, width=400)
-
-        if CROPPER_AVAILABLE and st.checkbox("✂️ Crop area teks"):
-             cropped_image = st_cropper(original_image, realtime_update=True, box_color='#FF0004')
-             if cropped_image:
-                st.image(cropped_image, "Hasil Crop", width=300)
-                image_to_process = cropped_image
-
-        if st.button("🔍 Proses OCR Sekarang", type="primary"):
+        original_image = Image.open(uploaded_file).convert("RGB")
+        st.image(original_image, caption="Gambar yang diunggah", width=500)
+        
+        if st.button("🔍 Proses OCR Sekarang", type="primary", use_container_width=True):
             with st.spinner("Membaca teks dari gambar..."):
-                if image_to_process.mode != 'RGB':
-                    image_to_process = image_to_process.convert('RGB')
-                
-                result_text = ocr_bima_to_latin(image_to_process)
-            
+                tesseract_config = setup_tesseract()
+                result_text = ocr_image(original_image) if tesseract_config else "Error: Tesseract tidak terkonfigurasi"
+
             if result_text:
                 st.success("✅ OCR berhasil!")
                 st.text_area("Hasil Teks Latin:", result_text, height=100)
             else:
-                st.error("❌ OCR gagal mengenali teks. Coba gunakan gambar yang lebih jelas atau crop area teks.")
+                st.error("❌ OCR gagal mengenali teks.")
+
+def info_page():
+    """Halaman Informasi Sistem."""
+    st.header("ℹ️ Informasi Sistem")
+    st.markdown("---")
+    st.markdown("### Status Komponen")
+    
+    model_ok = load_classification_model() is not None
+    dataset_ok = os.path.exists(DATASET_PATH) and len(os.listdir(DATASET_PATH)) > 0
+    tesseract_ok = setup_tesseract() is not None
+
+    st.metric("Status Model Klasifikasi", "✅ Siap" if model_ok else "❌ Bermasalah")
+    st.metric("Status Dataset", "✅ Siap" if dataset_ok else "❌ Bermasalah")
+    st.metric("Status Mesin OCR (Tesseract)", "✅ Siap" if tesseract_ok else "❌ Bermasalah")
+    st.markdown("---")
+    st.markdown("### Tentang Aplikasi")
+    st.info("Aplikasi ini dibuat menggunakan Python dan Streamlit untuk antarmuka pengguna, TensorFlow/Keras untuk model klasifikasi, dan Tesseract untuk OCR.")
+    st.code(f"Lokasi Model: {MODEL_PATH}\nLokasi Dataset: {DATASET_PATH}", language=None)
 
 # ===============================
-# MAIN APP ROUTER
+# ROUTER & EKSEKUSI UTAMA
 # ===============================
-
 def main():
     """Fungsi utama untuk menjalankan aplikasi dan navigasi halaman."""
-    sidebar_navigation()
+    st.sidebar.title("MENU NAVIGASI")
+    if st.sidebar.button("🏠 Beranda", use_container_width=True): st.session_state.current_page = "home"
+    if st.sidebar.button("🔤 Transliterasi", use_container_width=True): st.session_state.current_page = "transliterasi"
+    if st.sidebar.button("🎯 Klasifikasi", use_container_width=True): st.session_state.current_page = "klasifikasi"
+    if st.sidebar.button("📖 OCR", use_container_width=True): st.session_state.current_page = "ocr"
+    if st.sidebar.button("ℹ️ Informasi Sistem", use_container_width=True): st.session_state.current_page = "info"
     
-    page_map = {
+    pages = {
         "home": home_page,
         "transliterasi": transliteration_page,
         "klasifikasi": classification_page,
         "ocr": ocr_page,
+        "info": info_page
     }
-    
-    # Jalankan fungsi halaman yang sesuai dengan state
-    page_function = page_map.get(st.session_state.current_page, home_page)
-    page_function()
+    pages.get(st.session_state.current_page, home_page)()
 
 if __name__ == "__main__":
     main()
