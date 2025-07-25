@@ -40,26 +40,6 @@ st.markdown("""
         font-weight: bold;
         margin-bottom: 2rem;
     }
-    button[data-testid="stBaseButton-headerNoPadding"] {
-    position: fixed !important;
-    left: 8px !important;
-    top: 8px !important;
-    z-index: 999 !important;
-    width: 55px !important;
-    height: 28px !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border: 1px solid #FFD700 !important;
-    border-radius: 4px !important;
-    background-color: #000000 !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
-    overflow: hidden !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-size: 0 !important;
-    line-height: 1 !important;
-}
 
 .css-1v0mbdj {
         font-size: 32px; /* Mengubah ukuran font ikon */
