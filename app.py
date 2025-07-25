@@ -1097,7 +1097,7 @@ def ocr_page():
     
     # Warning sesuai permintaan
     st.warning(
-        "⚠️ **Penting:** Untuk hasil terbaik, unggah gambar yang jelas berisi **satu baris** dengan **maksimal 8 karakter**."
+        "⚠️ **Penting:** Untuk hasil terbaik, unggah gambar yang jelas berisi **satu baris** dengan **maksimal 8 karakter**. Serta usahakan ada jarak 2 spasi antar karakter "
     )
     
     tesseract_config = setup_tesseract()
