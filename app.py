@@ -607,7 +607,7 @@ def show_simple_transliteration_guide():
     st.markdown("""
     <div class="simple-guide">
     <h3>📝 Cara Menggunakan (3 Langkah Mudah)</h3>
-    <p><strong>1. Ketik Teks</strong> → Tulis kata dalam huruf biasa (misal: BIMA, NGAHA)</p>
+    <p><strong>1. Ketik Teks</strong> → Tulis kata atau kalimat dalam huruf biasa (misal: UTA MBECA KARAMBA, NGAHA)</p>
     <p><strong>2. Klik Tombol</strong> → Tekan tombol "🔄 Transliterasi"</p>
     <p><strong>3. Download</strong> → Klik "📥 Download Gambar" untuk menyimpan</p>
     
@@ -625,7 +625,7 @@ def show_simple_classification_guide():
     
     <p><strong>Pilihan 1 - Gambar sendiri:</strong></p>
     <p>1. Pilih "🎨 Canvas Drawing"</p>
-    <p>2. Gambar 1 huruf aksara Bima di kotak putih</p>
+    <p>2. Gambar 1 huruf aksara Bima di kotak putih (Kanvas)</p>
     <p>3. Klik "🔍 Klasifikasi"</p>
     
     <p><strong>Pilihan 2 - Upload foto:</strong></p>
@@ -645,7 +645,7 @@ def show_simple_ocr_guide():
     <div class="simple-guide">
     <h3>📖 Cara Membaca Aksara dari Foto (2 Langkah)</h3>
     
-    <p><strong>1. Upload Foto</strong> → Pilih foto yang berisi tulisan aksara Bima</p>
+    <p><strong>1. Upload Foto</strong> → Pilih foto yang berisi tulisan aksara Bima (1 baris)</p>
     <p><strong>2. Proses</strong> → Klik "🔍 Proses OCR" dan tunggu hasilnya</p>
     
     <p><strong>Tips untuk hasil terbaik:</strong></p>
