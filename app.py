@@ -40,24 +40,6 @@ st.markdown("""
         font-weight: bold;
         margin-bottom: 2rem;
     }
-    /* Menghilangkan tombol default */
-    .css-1v0mbdj {
-        visibility: hidden;
-    }
-
-    /* Menambahkan tombol kustom untuk membuka sidebar */
-    .custom-sidebar-btn {
-        font-size: 40px; /* Ukuran ikon */
-        color: #007bff;  /* Warna ikon */
-        cursor: pointer;
-    }
-
-    /* Menyesuaikan ukuran dan tampilan sidebar untuk mobile */
-    @media screen and (max-width: 768px) {
-        .custom-sidebar-btn {
-            font-size: 48px;
-        }
-    }
 
     .feature-card {
         background-color: #f8f9fa;
@@ -98,7 +80,6 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
-st.sidebar.markdown('<i class="custom-sidebar-btn">≡</i>', unsafe_allow_html=True)
 
 # ===============================
 # KONFIGURASI PATH
