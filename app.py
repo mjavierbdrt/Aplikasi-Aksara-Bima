@@ -23,6 +23,7 @@ except ImportError:
 # Konfigurasi halaman
 st.set_page_config(
     page_title="Sistem Aksara Bima",
+    page_icon="🔤",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -597,63 +598,94 @@ def check_system_requirements():
     return requirements
 
 # ===============================
-# PANDUAN FUNCTIONS (SIMPLIFIED)
+# PANDUAN FUNCTIONS (SIMPLIFIED & DROPDOWN)
 # ===============================
 
 def show_simple_transliteration_guide():
     """
-    Panduan transliterasi yang disederhanakan
+    Panduan transliterasi yang disederhanakan dalam dropdown
     """
-    st.markdown("""
-    <div class="simple-guide">
-    <h3>📝 Cara Menggunakan (3 Langkah Mudah)</h3>
-    <p><strong>1. Ketik Teks</strong> → Tulis kata atau kalimat dalam huruf biasa (misal: UTA MBECA KARAMBA, NGAHA)</p>
-    <p><strong>2. Klik Tombol</strong> → Tekan tombol "🔄 Transliterasi"</p>
-    <p><strong>3. Download</strong> → Klik "📥 Download Gambar" untuk menyimpan</p>
-    
-    <p>💡 <strong>Tips:</strong> Pisahkan kata dengan spasi, gunakan huruf kapital</p>
-    </div>
-    """, unsafe_allow_html=True)
+    with st.expander("📖 Cara Menggunakan Fitur Transliterasi", expanded=False):
+        st.markdown("""
+        <div class="simple-guide">
+        <h3>📝 3 Langkah Mudah</h3>
+        <p><strong>1. Ketik Teks</strong> → Tulis kata atau kalimat dalam huruf biasa (misal: UTA MBECA KARAMBA, NGAHA)</p>
+        <p><strong>2. Klik Tombol</strong> → Tekan tombol "🔄 Transliterasi"</p>
+        <p><strong>3. Download</strong> → Klik "📥 Download Gambar" untuk menyimpan</p>
+        
+        <p>💡 <strong>Tips:</strong> Pisahkan kata dengan spasi, gunakan huruf kapital</p>
+        </div>
+        """, unsafe_allow_html=True)
 
 def show_simple_classification_guide():
     """
-    Panduan klasifikasi yang disederhanakan
+    Panduan klasifikasi yang disederhanakan dalam dropdown
     """
-    st.markdown("""
-    <div class="simple-guide">
-    <h3>🎯 Cara Mengenali Aksara (2 Pilihan Mudah)</h3>
-    
-    <p><strong>Pilihan 1 - Gambar sendiri:</strong></p>
-    <p>1. Pilih "🎨 Canvas Drawing"</p>
-    <p>2. Gambar 1 huruf aksara Bima di kotak putih (Kanvas)</p>
-    <p>3. Klik "🔍 Klasifikasi"</p>
-    
-    <p><strong>Pilihan 2 - Upload foto:</strong></p>
-    <p>1. Pilih "📁 Upload Gambar"</p>
-    <p>2. Pilih foto yang berisi 1 huruf aksara</p>
-    <p>3. Klik "🔍 Klasifikasi"</p>
-    
-    <p>💡 <strong>Tips:</strong> Gunakan gambar yang jelas dan fokus pada 1 huruf saja</p>
-    </div>
-    """, unsafe_allow_html=True)
+    with st.expander("📖 Cara Menggunakan Fitur Klasifikasi", expanded=False):
+        st.markdown("""
+        <div class="simple-guide">
+        <h3>🎯 2 Pilihan Mudah</h3>
+        
+        <p><strong>Pilihan 1 - Gambar sendiri:</strong></p>
+        <p>1. Pilih "🎨 Canvas Drawing"</p>
+        <p>2. Gambar 1 huruf aksara Bima di kotak putih (Kanvas)</p>
+        <p>3. Klik "🔍 Klasifikasi"</p>
+        
+        <p><strong>Pilihan 2 - Upload foto:</strong></p>
+        <p>1. Pilih "📁 Upload Gambar"</p>
+        <p>2. Pilih foto yang berisi 1 huruf aksara</p>
+        <p>3. Klik "🔍 Klasifikasi"</p>
+        
+        <p>💡 <strong>Tips:</strong> Gunakan gambar yang jelas dan fokus pada 1 huruf saja</p>
+        </div>
+        """, unsafe_allow_html=True)
 
 def show_simple_ocr_guide():
     """
-    Panduan OCR yang disederhanakan
+    Panduan OCR yang disederhanakan dalam dropdown
     """
-    st.markdown("""
-    <div class="simple-guide">
-    <h3>📖 Cara Membaca Aksara dari Foto (2 Langkah)</h3>
+    with st.expander("📖 Cara Menggunakan Fitur OCR", expanded=False):
+        st.markdown("""
+        <div class="simple-guide">
+        <h3>📖 2 Langkah Mudah</h3>
+        
+        <p><strong>1. Upload Foto</strong> → Pilih foto yang berisi tulisan aksara Bima (1 baris)</p>
+        <p><strong>2. Proses</strong> → Klik "🔍 Proses OCR" dan tunggu hasilnya</p>
+        
+        <p><strong>Tips untuk hasil terbaik:</strong></p>
+        <p>• Foto harus jelas dan terang</p>
+        <p>• Maksimal 8 huruf dalam 1 baris</p>
+        <p>• Jika ada banyak tulisan, centang "✂️ Crop area teks" untuk memilih bagian yang mau dibaca</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+# ===============================
+# HELPER FUNCTIONS
+# ===============================
+
+def _show_character_text_list():
+    """
+    Helper function untuk menampilkan daftar karakter dalam format teks
+    """
+    col1, col2, col3 = st.columns(3)
     
-    <p><strong>1. Upload Foto</strong> → Pilih foto yang berisi tulisan aksara Bima (1 baris)</p>
-    <p><strong>2. Proses</strong> → Klik "🔍 Proses OCR" dan tunggu hasilnya</p>
+    # Bagi karakter menjadi 3 kolom
+    chars_per_col = len(CLASSIFICATION_CHARACTERS) // 3
     
-    <p><strong>Tips untuk hasil terbaik:</strong></p>
-    <p>• Foto harus jelas dan terang</p>
-    <p>• Maksimal 8 huruf dalam 1 baris</p>
-    <p>• Jika ada banyak tulisan, centang "✂️ Crop area teks" untuk memilih bagian yang mau dibaca</p>
-    </div>
-    """, unsafe_allow_html=True)
+    with col1:
+        st.write("**Kelompok 1:**")
+        for char in CLASSIFICATION_CHARACTERS[:chars_per_col]:
+            st.write(f"• {char}")
+    
+    with col2:
+        st.write("**Kelompok 2:**")
+        for char in CLASSIFICATION_CHARACTERS[chars_per_col:2*chars_per_col]:
+            st.write(f"• {char}")
+    
+    with col3:
+        st.write("**Kelompok 3:**")
+        for char in CLASSIFICATION_CHARACTERS[2*chars_per_col:]:
+            st.write(f"• {char}")
 
 # ===============================
 # SIDEBAR NAVIGATION
@@ -828,12 +860,12 @@ def transliteration_page():
     st.header("🔤 Transliterasi Latin → Aksara Bima")
     st.markdown("---")
     
-    # Tampilkan panduan sederhana
+    # Tampilkan panduan dalam dropdown
     show_simple_transliteration_guide()
     
     char_images = load_character_images() 
     
-    # Input teks (tanpa contoh input seperti permintaan)
+    # Input teks
     input_text = st.text_area(
         "Masukkan teks Latin:",
         placeholder="Contoh: NGAHA, UTA MBECA MACI",
@@ -930,7 +962,7 @@ def classification_page():
     st.header("🎯 Klasifikasi Karakter Aksara Bima")
     st.markdown("---")
     
-    # Tampilkan panduan sederhana
+    # Tampilkan panduan dalam dropdown
     show_simple_classification_guide()
     
     # Load resources
@@ -944,10 +976,12 @@ def classification_page():
     
     # Info tentang karakter yang didukung
     st.info(f"✨ Model ini dapat mengenali {len(CLASSIFICATION_CHARACTERS)} karakter aksara Bima.")
+    
+    # FITUR BARU: Dropdown dengan gambar daftar karakter aksara Bima
     with st.expander("🖼️ Lihat Gambar Daftar Karakter Aksara Bima"):
         # Path untuk gambar daftar karakter
-        daftar_karakter_path = os.path.join(os.path.dirname(__file__), 'assets/daftar_karakter_utama.png')
-
+        daftar_karakter_path = os.path.join(os.path.dirname(__file__), 'daftar_karakter_bima.png')
+        
         # Cek apakah file gambar ada
         if os.path.exists(daftar_karakter_path):
             try:
@@ -966,27 +1000,13 @@ def classification_page():
                 _show_character_text_list()
         else:
             st.warning(f"⚠️ Gambar daftar karakter tidak ditemukan di: `{daftar_karakter_path}`")
-            
-    with st.expander("📋 Lihat Daftar Karakter yang Didukung"):
-        col1, col2, col3 = st.columns(3)
-        
-        # Bagi karakter menjadi 3 kolom
-        chars_per_col = len(CLASSIFICATION_CHARACTERS) // 3
-        
-        with col1:
-            st.write("**Kelompok 1:**")
-            for char in CLASSIFICATION_CHARACTERS[:chars_per_col]:
-                st.write(f"• {char}")
-        
-        with col2:
-            st.write("**Kelompok 2:**")
-            for char in CLASSIFICATION_CHARACTERS[chars_per_col:2*chars_per_col]:
-                st.write(f"• {char}")
-        
-        with col3:
-            st.write("**Kelompok 3:**")
-            for char in CLASSIFICATION_CHARACTERS[2*chars_per_col:]:
-                st.write(f"• {char}")
+            st.info("📝 Silakan letakkan file gambar dengan nama `daftar_karakter_bima.png` di direktori utama aplikasi")
+            # Fallback ke daftar teks
+            st.markdown("**Daftar karakter yang didukung (mode teks):**")
+            _show_character_text_list()
+    
+    with st.expander("📋 Lihat Daftar Karakter dalam Teks"):
+        _show_character_text_list()
     
     # Pilihan input method
     input_method = st.radio(
@@ -1020,6 +1040,7 @@ def classification_page():
                     processed_image = preprocess_canvas_for_classification(canvas_result.image_data)
                     original_display = canvas_result.image_data
                     
+                    # Show preview
                     st.image(canvas_result.image_data, caption="Gambar yang akan diproses", width=200)
                 else:
                     st.info("Silakan gambar karakter di canvas")
@@ -1103,6 +1124,20 @@ def classification_page():
                 else:
                     st.success("✅ Tingkat kepercayaan tinggi. Hasil sangat akurat!")
                     
+                # Tambahan: Top 3 prediksi
+                if hasattr(model, 'predict'):
+                    try:
+                        all_predictions = model.predict(processed_image, verbose=0)[0]
+                        top_3_indices = np.argsort(all_predictions)[-3:][::-1]
+                        
+                        st.markdown("### 📋 3 Prediksi Teratas:")
+                        for i, idx in enumerate(top_3_indices):
+                            if idx < len(CLASSIFICATION_CHARACTERS):
+                                char_name = CLASSIFICATION_CHARACTERS[idx]
+                                conf = all_predictions[idx]
+                                st.write(f"{i+1}. **{char_name}** - {conf:.2%}")
+                    except:
+                        pass
                         
             else:
                 st.error("Klasifikasi gagal. Silakan coba lagi dengan gambar yang lebih jelas.")
@@ -1114,7 +1149,7 @@ def ocr_page():
     st.header("📖 OCR Aksara Bima → Latin")
     st.markdown("---")
     
-    # Tampilkan panduan sederhana
+    # Tampilkan panduan dalam dropdown
     show_simple_ocr_guide()
     
     # Warning sesuai permintaan
