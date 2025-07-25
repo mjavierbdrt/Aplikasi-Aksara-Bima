@@ -1158,7 +1158,7 @@ def ocr_page():
     )
     st.info(
         "💡 **Tips:** Gunakan Gambar Hasil Transliterasi Latin ke Aksara Bima untuk hasil OCR lebih baik!"
-    
+    )
     tesseract_config = setup_tesseract()
     
     if tesseract_config is None:
