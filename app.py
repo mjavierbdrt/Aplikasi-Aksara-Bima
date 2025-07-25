@@ -724,7 +724,7 @@ def home_page():
     """
     Halaman beranda yang menarik
     """
-    logo_url = os.path.join(os.path.dirname(__file__), 'logo/logo.png')
+    logo_url = os.path.join(os.path.dirname(__file__), 'assets/logo.png')
     col1, col2 = st.columns([1, 5])
     
     with col1:
@@ -944,7 +944,10 @@ def classification_page():
     
     # Info tentang karakter yang didukung
     st.info(f"✨ Model ini dapat mengenali {len(CLASSIFICATION_CHARACTERS)} karakter aksara Bima.")
-    
+    with st.expander("🖼️ Lihat Gambar Daftar Karakter Aksara Bima"):
+        # Path untuk gambar daftar karakter
+        daftar_karakter_path = os.path.join(os.path.dirname(__file__), 'assets/daftar_karakter_utama.png')
+        
     with st.expander("📋 Lihat Daftar Karakter yang Didukung"):
         col1, col2, col3 = st.columns(3)
         
