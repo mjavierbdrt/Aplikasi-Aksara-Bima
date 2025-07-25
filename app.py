@@ -23,7 +23,6 @@ except ImportError:
 # Konfigurasi halaman
 st.set_page_config(
     page_title="Sistem Aksara Bima",
-    page_icon="🔤",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -567,9 +566,18 @@ def ocr_bima_to_latin(image_path, tesseract_config):
 # UTILITY FUNCTIONS
 # ===============================
 
+def image_to_bytes(img):
+    """
+    Konversi gambar PIL ke bytes untuk download (PERBAIKAN FUNGSI)
+    """
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    byte_data = buf.getvalue()
+    return byte_data
+
 def image_to_base64(img):
     """
-    Konversi gambar PIL ke base64 untuk download
+    Konversi gambar PIL ke base64 untuk display
     """
     buffered = io.BytesIO()
     img.save(buffered, format="PNG")
@@ -733,14 +741,14 @@ def home_page():
     
     with col1:
         st.markdown("""
-        ## 🎯 Selamat Datang di Aplikasi Pengenalan Aksara Bima!
+        ## Selamat Datang di Aplikasi Pengenalan Aksara Bima!
         
         Aplikasi terintegrasi yang menyediakan tiga fitur utama untuk membantu Anda
         Mengenal aksara Bima:
         
-        - **🔤 Transliterasi**: Mengubah teks Latin menjadi teks aksara Bima
-        - **🎯 Klasifikasi**: Identifikasi karakter aksara Bima dari gambar
-        - **📖 OCR**: Mengubah Teks Aksara bim ke teks latin
+        - **🔤 Transliterasi**: Mengubah teks Latin menjadi teks Aksara Bima
+        - **🎯 Klasifikasi**: Memprediksi karakter aksara Bima dari Gambar
+        - **📖 OCR**: Mengubah Teks Aksara Bima ke teks latin
         """)
     
     with col2:
@@ -828,7 +836,7 @@ def transliteration_page():
     # Input teks (tanpa contoh input seperti permintaan)
     input_text = st.text_area(
         "Masukkan teks Latin:",
-        placeholder="Contoh: NGAHA, BIMA SAKTI",
+        placeholder="Contoh: NGAHA, UTA MBECA MACI",
         height=100
     )
     
@@ -895,15 +903,15 @@ def transliteration_page():
                 
                 st.markdown("---")
 
-                # Opsi download dan metrik
+                # Opsi download dan metrik (PERBAIKAN DOWNLOAD)
                 col_dl, col_metrics = st.columns(2)
                 
                 with col_dl:
-                    # Button download
-                    img_base64 = image_to_base64(full_image)
+                    # Button download dengan fungsi yang diperbaiki
+                    byte_data = image_to_bytes(full_image)
                     st.download_button(
                         label="📥 Download Gambar",
-                        data=base64.b64decode(img_base64),
+                        data=byte_data,
                         file_name=f"transliterasi_bima_{input_text[:20].replace(' ', '_')}.png",
                         mime="image/png"
                     )
@@ -974,7 +982,7 @@ def classification_page():
             # Canvas untuk menggambar
             canvas_result = st_canvas(
                 fill_color="rgba(255, 255, 255, 0.0)",  # Transparent fill
-                stroke_width=15,  # Stroke lebih tebal untuk clarity
+                stroke_width=13,  # Stroke lebih tebal untuk clarity
                 stroke_color="black",
                 background_color="white",
                 width=400,
@@ -990,7 +998,6 @@ def classification_page():
                     processed_image = preprocess_canvas_for_classification(canvas_result.image_data)
                     original_display = canvas_result.image_data
                     
-                    # Show preview (hanya gambar asli, tanpa preview 224x224 sesuai permintaan)
                     st.image(canvas_result.image_data, caption="Gambar yang akan diproses", width=200)
                 else:
                     st.info("Silakan gambar karakter di canvas")
@@ -1046,7 +1053,7 @@ def classification_page():
             character, confidence = classify_character(processed_image, model)
             
             if character:
-                st.success(f"Prediksi: **{character}** (Confidence: {confidence:.2%})")
+                st.success(f"Prediksi: **{character}** (Akurasi: {confidence:.2%})")
                 
                 # Tampilkan hasil
                 col1, col2 = st.columns(2)
@@ -1074,27 +1081,13 @@ def classification_page():
                 else:
                     st.success("✅ Tingkat kepercayaan tinggi. Hasil sangat akurat!")
                     
-                # Tambahan: Top 3 prediksi
-                if hasattr(model, 'predict'):
-                    try:
-                        all_predictions = model.predict(processed_image, verbose=0)[0]
-                        top_3_indices = np.argsort(all_predictions)[-3:][::-1]
-                        
-                        st.markdown("### 📋 3 Prediksi Teratas:")
-                        for i, idx in enumerate(top_3_indices):
-                            if idx < len(CLASSIFICATION_CHARACTERS):
-                                char_name = CLASSIFICATION_CHARACTERS[idx]
-                                conf = all_predictions[idx]
-                                st.write(f"{i+1}. **{char_name}** - {conf:.2%}")
-                    except:
-                        pass
                         
             else:
                 st.error("Klasifikasi gagal. Silakan coba lagi dengan gambar yang lebih jelas.")
 
 def ocr_page():
     """
-    Halaman OCR Aksara Bima ke Latin (SIMPLIFIED)
+    Halaman OCR Aksara Bima ke Latin (SIMPLIFIED & TANPA DOWNLOAD GAMBAR PROSES)
     """
     st.header("📖 OCR Aksara Bima → Latin")
     st.markdown("---")
@@ -1181,34 +1174,14 @@ def ocr_page():
                         
                         st.markdown("---")
                         
-                        # Download dan actions
-                        col1, col2 = st.columns(2)
-                        
-                        with col1:
-                            # Download teks
-                            st.download_button(
-                                label="📥 Download Hasil OCR",
-                                data=result_text,
-                                file_name=f"ocr_result_{len(result_text)}_chars.txt",
-                                mime="text/plain",
-                                use_container_width=True
-                            )
-                        
-                        with col2:
-                            # Download gambar yang diproses
-                            img_buffer = io.BytesIO()
-                            final_image.save(img_buffer, format="PNG")
-                            img_data = img_buffer.getvalue()
-                            
-                            download_name = "cropped_image_ocr.png" if (use_crop and final_image != original_image) else "processed_image_ocr.png"
-                            
-                            st.download_button(
-                                label="📷 Download Gambar Proses",
-                                data=img_data,
-                                file_name=download_name,
-                                mime="image/png",
-                                use_container_width=True
-                            )
+                        # HANYA DOWNLOAD TEKS (DIHAPUS DOWNLOAD GAMBAR PROSES)
+                        st.download_button(
+                            label="📥 Download Hasil OCR",
+                            data=result_text,
+                            file_name=f"ocr_result_{len(result_text)}_chars.txt",
+                            mime="text/plain",
+                            use_container_width=True
+                        )
                         
                     else:
                         st.error("❌ OCR gagal mengenali teks.")
@@ -1264,7 +1237,7 @@ def info_page():
     st.markdown("---")
     
     st.markdown("""
-    ## 🎯 Fitur Aplikasi
+    ## Fitur Aplikasi
     
     ### 1. 🔤 Transliterasi Latin → Aksara Bima
     - Konversi teks Latin ke representasi visual aksara Bima
