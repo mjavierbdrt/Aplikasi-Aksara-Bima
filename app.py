@@ -1156,6 +1156,8 @@ def ocr_page():
     st.warning(
         "⚠️ **Penting:** Untuk hasil terbaik, unggah gambar yang jelas berisi **satu baris** dengan **maksimal 8 karakter**. Serta usahakan ada jarak 2 spasi antar karakter "
     )
+    st.info(
+        "💡 **Tips:** Gunakan Gambar Hasil Transliterasi Latin ke Aksara Bima untuk hasil OCR lebih baik!"
     
     tesseract_config = setup_tesseract()
     
