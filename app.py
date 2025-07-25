@@ -40,8 +40,6 @@ st.markdown("""
         font-weight: bold;
         margin-bottom: 2rem;
     }
-
- <style>
     /* Menghilangkan tombol default */
     .css-1v0mbdj {
         visibility: hidden;
