@@ -73,6 +73,15 @@ st.markdown("""
         border-left: 4px solid #1f77b4;
         margin: 1rem 0;
     }
+    
+    .simple-guide {
+        background-color: #f0f8ff;
+        padding: 1.5rem;
+        border-radius: 0.8rem;
+        border: 2px solid #4CAF50;
+        margin: 1rem 0;
+        font-size: 1.1rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -580,133 +589,63 @@ def check_system_requirements():
     return requirements
 
 # ===============================
-# PANDUAN FUNCTIONS
+# PANDUAN FUNCTIONS (SIMPLIFIED)
 # ===============================
 
-def show_transliteration_guide():
+def show_simple_transliteration_guide():
     """
-    Menampilkan panduan penggunaan fitur transliterasi
+    Panduan transliterasi yang disederhanakan
     """
-    with st.expander("📖 Panduan Penggunaan Transliterasi", expanded=False):
-        st.markdown("""
-        <div class="guide-box">
-        <h4>🎯 Cara Menggunakan Fitur Transliterasi</h4>
-        
-        <h5>1. Input Teks</h5>
-        • Ketik atau paste teks Latin di area input<br>
-        • Contoh: "NGAHA", "BIMA SAKTI", "COU NGARA"<br>
-        • Sistem akan otomatis mengubah ke huruf kapital<br><br>
-        
-        <h5>2. Algoritma Longest Match First</h5>
-        • Sistem mencari kombinasi karakter terpanjang terlebih dahulu<br>
-        • Contoh: "NGAHA" → ["NGA", "HA"] bukan ["N", "G", "A", "H", "A"]<br><br>
-        
-        <h5>3. Hasil Output</h5>
-        • <strong>Pemecahan Karakter:</strong> Menunjukkan bagaimana teks dipecah<br>
-        • <strong>Visualisasi Per Kata:</strong> Gambar untuk setiap kata terpisah<br>
-        • <strong>Hasil Lengkap:</strong> Satu gambar panjang untuk seluruh teks<br><br>
-        
-        <h5>4. Download</h5>
-        • Klik tombol "📥 Download Gambar" untuk menyimpan hasil<br>
-        • Format: PNG dengan resolusi tinggi<br><br>
-        
-        <h5>💡 Tips untuk Hasil Terbaik</h5>
-        • Gunakan huruf kapital untuk konsistensi<br>
-        • Pisahkan kata dengan spasi<br>
-        • Periksa daftar karakter yang didukung di halaman Info<br>
-        </div>
-        """, unsafe_allow_html=True)
+    st.markdown("""
+    <div class="simple-guide">
+    <h3>📝 Cara Menggunakan (3 Langkah Mudah)</h3>
+    <p><strong>1. Ketik Teks</strong> → Tulis kata dalam huruf biasa (misal: BIMA, NGAHA)</p>
+    <p><strong>2. Klik Tombol</strong> → Tekan tombol "🔄 Transliterasi"</p>
+    <p><strong>3. Download</strong> → Klik "📥 Download Gambar" untuk menyimpan</p>
+    
+    <p>💡 <strong>Tips:</strong> Pisahkan kata dengan spasi, gunakan huruf kapital</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-def show_classification_guide():
+def show_simple_classification_guide():
     """
-    Menampilkan panduan penggunaan fitur klasifikasi
+    Panduan klasifikasi yang disederhanakan
     """
-    with st.expander("📖 Panduan Penggunaan Klasifikasi", expanded=False):
-        st.markdown("""
-        <div class="guide-box">
-        <h4>🎯 Cara Menggunakan Fitur Klasifikasi</h4>
-        
-        <h5>1. Pilih Metode Input</h5>
-        <strong>🎨 Canvas Drawing:</strong><br>
-        • Gambar karakter langsung di canvas 400x400 pixel<br>
-        • Gunakan stroke yang tebal dan jelas<br>
-        • Gambar satu karakter saja<br><br>
-        
-        <strong>📁 Upload Gambar:</strong><br>
-        • Upload file PNG, JPG, atau JPEG<br>
-        • Gambar akan diubah ukuran ke 224x224 pixel<br>
-        • Opsional: Gunakan fitur crop untuk fokus pada karakter<br><br>
-        
-        <h5>2. Fitur Crop (Opsional)</h5>
-        • Centang "✂️ Crop gambar" jika ingin memotong area tertentu<br>
-        • Drag area yang berisi karakter aksara Bima<br>
-        • Hasil crop akan digunakan untuk klasifikasi<br><br>
-        
-        <h5>3. Proses Klasifikasi</h5>
-        • Klik tombol "🔍 Klasifikasi"<br>
-        • Sistem akan menganalisis dan memberikan prediksi<br>
-        • Menampilkan karakter yang terdeteksi dengan confidence score<br><br>
-        
-        <h5>4. Interpretasi Hasil</h5>
-        • <strong>Confidence > 80%:</strong> Hasil sangat akurat ✅<br>
-        • <strong>Confidence 50-80%:</strong> Hasil cukup akurat ℹ️<br>
-        • <strong>Confidence < 50%:</strong> Hasil kurang akurat ⚠️<br>
-        • Lihat juga Top 3 prediksi untuk alternatif<br><br>
-        
-        <h5>💡 Tips untuk Hasil Terbaik</h5>
-        • Gunakan gambar dengan kontras tinggi<br>
-        • Karakter harus jelas dan tidak terpotong<br>
-        • Untuk upload gambar, crop area yang berisi karakter saja<br>
-        • Model mendukung 22 karakter (lihat daftar di Info)<br>
-        </div>
-        """, unsafe_allow_html=True)
+    st.markdown("""
+    <div class="simple-guide">
+    <h3>🎯 Cara Mengenali Aksara (2 Pilihan Mudah)</h3>
+    
+    <p><strong>Pilihan 1 - Gambar sendiri:</strong></p>
+    <p>1. Pilih "🎨 Canvas Drawing"</p>
+    <p>2. Gambar 1 huruf aksara Bima di kotak putih</p>
+    <p>3. Klik "🔍 Klasifikasi"</p>
+    
+    <p><strong>Pilihan 2 - Upload foto:</strong></p>
+    <p>1. Pilih "📁 Upload Gambar"</p>
+    <p>2. Pilih foto yang berisi 1 huruf aksara</p>
+    <p>3. Klik "🔍 Klasifikasi"</p>
+    
+    <p>💡 <strong>Tips:</strong> Gunakan gambar yang jelas dan fokus pada 1 huruf saja</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-def show_ocr_guide():
+def show_simple_ocr_guide():
     """
-    Menampilkan panduan penggunaan fitur OCR
+    Panduan OCR yang disederhanakan
     """
-    with st.expander("📖 Panduan Penggunaan OCR", expanded=False):
-        st.markdown("""
-        <div class="guide-box">
-        <h4>🎯 Cara Menggunakan Fitur OCR</h4>
-        
-        <h5>1. Upload Gambar</h5>
-        • Upload file PNG, JPG, atau JPEG yang berisi teks aksara Bima<br>
-        • Pastikan gambar memiliki resolusi yang cukup (minimal 300 DPI)<br>
-        • Teks harus horizontal (tidak miring)<br><br>
-        
-        <h5>2. Fitur Crop (Opsional)</h5>
-        • Centang "✂️ Crop area teks" untuk hasil lebih akurat<br>
-        • Pilih area yang hanya berisi teks aksara Bima<br>
-        • Hindari background yang rumit atau noise<br>
-        • Sisakan sedikit margin di sekitar teks<br><br>
-        
-        <h5>3. Proses OCR</h5>
-        • Klik tombol "🔍 Proses OCR"<br>
-        • Sistem akan menganalisis gambar dan mengekstrak teks<br>
-        • Hasil akan muncul dalam format teks Latin<br><br>
-        
-        <h5>4. Download Hasil</h5>
-        • <strong>📥 Download Hasil OCR:</strong> File .txt berisi teks Latin<br>
-        • <strong>📷 Download Gambar Proses:</strong> Gambar yang digunakan untuk OCR<br><br>
-        
-        <h5>💡 Tips untuk Hasil Terbaik</h5>
-        • <strong>Kualitas Gambar:</strong><br>
-        &nbsp;&nbsp;- Kontras tinggi antara teks dan background<br>
-        &nbsp;&nbsp;- Pencahayaan merata tanpa bayangan<br>
-        &nbsp;&nbsp;- Teks tidak blur atau buram<br><br>
-        
-        • <strong>Komposisi:</strong><br>
-        &nbsp;&nbsp;- Satu baris teks dengan maksimal 8 karakter<br>
-        &nbsp;&nbsp;- Teks horizontal (tidak miring)<br>
-        &nbsp;&nbsp;- Background sederhana dan bersih<br><br>
-        
-        • <strong>Preprocessing:</strong><br>
-        &nbsp;&nbsp;- Gunakan fitur crop untuk fokus pada area teks<br>
-        &nbsp;&nbsp;- Hilangkan elemen yang tidak perlu<br>
-        &nbsp;&nbsp;- Pastikan tidak ada teks yang terpotong<br>
-        </div>
-        """, unsafe_allow_html=True)
+    st.markdown("""
+    <div class="simple-guide">
+    <h3>📖 Cara Membaca Aksara dari Foto (2 Langkah)</h3>
+    
+    <p><strong>1. Upload Foto</strong> → Pilih foto yang berisi tulisan aksara Bima</p>
+    <p><strong>2. Proses</strong> → Klik "🔍 Proses OCR" dan tunggu hasilnya</p>
+    
+    <p><strong>Tips untuk hasil terbaik:</strong></p>
+    <p>• Foto harus jelas dan terang</p>
+    <p>• Maksimal 8 huruf dalam 1 baris</p>
+    <p>• Jika ada banyak tulisan, centang "✂️ Crop area teks" untuk memilih bagian yang mau dibaca</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 # ===============================
 # SIDEBAR NAVIGATION
@@ -876,38 +815,22 @@ def home_page():
 
 def transliteration_page():
     """
-    Halaman transliterasi Latin ke Aksara Bima
+    Halaman transliterasi Latin ke Aksara Bima (SIMPLIFIED)
     """
     st.header("🔤 Transliterasi Latin → Aksara Bima")
     st.markdown("---")
     
-    # Tampilkan panduan
-    show_transliteration_guide()
+    # Tampilkan panduan sederhana
+    show_simple_transliteration_guide()
     
     char_images = load_character_images() 
     
-    st.markdown("""
-    Aplikasi ini mengubah teks Latin menjadi aksara Bima. 
-    Algoritma menggunakan prinsip **longest match first** untuk hasil yang optimal.
-    """)
-    
-    # Input teks
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
-        input_text = st.text_area(
-            "Masukkan teks Latin:",
-            placeholder="Contoh: NGAHA, MPALA, BIMA SAKTI",
-            height=100
-        )
-    
-    with col2:
-        st.markdown("### 💡 Contoh Input:")
-        st.code("""
-NGAHA 
-COU NGARA NGGOMI
-NGARA NAHU JAFIR
-        """)
+    # Input teks (tanpa contoh input seperti permintaan)
+    input_text = st.text_area(
+        "Masukkan teks Latin:",
+        placeholder="Contoh: NGAHA, BIMA SAKTI",
+        height=100
+    )
     
     if st.button("🔄 Transliterasi", type="primary"):
         if input_text.strip():
@@ -994,13 +917,13 @@ NGARA NAHU JAFIR
 
 def classification_page():
     """
-    Halaman klasifikasi karakter aksara Bima
+    Halaman klasifikasi karakter aksara Bima (SIMPLIFIED)
     """
     st.header("🎯 Klasifikasi Karakter Aksara Bima")
     st.markdown("---")
     
-    # Tampilkan panduan
-    show_classification_guide()
+    # Tampilkan panduan sederhana
+    show_simple_classification_guide()
     
     # Load resources
     model = load_classification_model()
@@ -1012,7 +935,7 @@ def classification_page():
         return
     
     # Info tentang karakter yang didukung
-    st.info(f"Model ini dapat mengklasifikasikan {len(CLASSIFICATION_CHARACTERS)} karakter aksara Bima.")
+    st.info(f"✨ Model ini dapat mengenali {len(CLASSIFICATION_CHARACTERS)} karakter aksara Bima.")
     
     with st.expander("📋 Lihat Daftar Karakter yang Didukung"):
         col1, col2, col3 = st.columns(3)
@@ -1037,7 +960,7 @@ def classification_page():
     
     # Pilihan input method
     input_method = st.radio(
-        "Pilih metode input:",
+        "Pilih cara input:",
         ["🎨 Canvas Drawing", "📁 Upload Gambar"]
     )
     
@@ -1046,7 +969,6 @@ def classification_page():
     
     if input_method == "🎨 Canvas Drawing":
         st.markdown("### 🎨 Gambar Karakter Aksara Bima")
-        st.info("Gambar akan diubah ke ukuran 224x224 pixel untuk model klasifikasi")
         
         try:
             # Canvas untuk menggambar
@@ -1068,15 +990,8 @@ def classification_page():
                     processed_image = preprocess_canvas_for_classification(canvas_result.image_data)
                     original_display = canvas_result.image_data
                     
-                    # Show preview
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.image(canvas_result.image_data, caption="Gambar Asli (400x400)", width=200)
-                    with col2:
-                        # Show resized version
-                        if processed_image is not None:
-                            display_resized = (processed_image[0] * 255).astype(np.uint8)
-                            st.image(display_resized, caption="Diproses untuk Model (224x224)", width=200)
+                    # Show preview (hanya gambar asli, tanpa preview 224x224 sesuai permintaan)
+                    st.image(canvas_result.image_data, caption="Gambar yang akan diproses", width=200)
                 else:
                     st.info("Silakan gambar karakter di canvas")
                     
@@ -1149,15 +1064,15 @@ def classification_page():
                         st.warning("Gambar referensi tidak tersedia dalam dataset")
                 
                 # Confidence bar
-                st.markdown("### 📊 Confidence Score")
+                st.markdown("### 📊 Tingkat Kepercayaan")
                 st.progress(confidence)
                 
                 if confidence < 0.5:
-                    st.warning("⚠️ Confidence rendah. Hasil mungkin tidak akurat.")
+                    st.warning("⚠️ Tingkat kepercayaan rendah. Hasil mungkin tidak akurat.")
                 elif confidence < 0.8:
-                    st.info("ℹ️ Confidence sedang. Hasil cukup akurat.")
+                    st.info("ℹ️ Tingkat kepercayaan sedang. Hasil cukup akurat.")
                 else:
-                    st.success("✅ Confidence tinggi. Hasil sangat akurat!")
+                    st.success("✅ Tingkat kepercayaan tinggi. Hasil sangat akurat!")
                     
                 # Tambahan: Top 3 prediksi
                 if hasattr(model, 'predict'):
@@ -1165,7 +1080,7 @@ def classification_page():
                         all_predictions = model.predict(processed_image, verbose=0)[0]
                         top_3_indices = np.argsort(all_predictions)[-3:][::-1]
                         
-                        st.markdown("### 📋 Top 3 Prediksi:")
+                        st.markdown("### 📋 3 Prediksi Teratas:")
                         for i, idx in enumerate(top_3_indices):
                             if idx < len(CLASSIFICATION_CHARACTERS):
                                 char_name = CLASSIFICATION_CHARACTERS[idx]
@@ -1179,15 +1094,15 @@ def classification_page():
 
 def ocr_page():
     """
-    Halaman OCR Aksara Bima ke Latin
+    Halaman OCR Aksara Bima ke Latin (SIMPLIFIED)
     """
     st.header("📖 OCR Aksara Bima → Latin")
     st.markdown("---")
     
-    # Tampilkan panduan
-    show_ocr_guide()
+    # Tampilkan panduan sederhana
+    show_simple_ocr_guide()
     
-    # Tambahan warning sesuai permintaan
+    # Warning sesuai permintaan
     st.warning(
         "⚠️ **Penting:** Untuk hasil terbaik, unggah gambar yang jelas berisi **satu baris** dengan **maksimal 8 karakter**."
     )
@@ -1198,11 +1113,6 @@ def ocr_page():
         st.error("Tesseract tidak tersedia. Pastikan path sudah benar.")
         st.code(f"Expected path: {TESSERACT_CMD}")
         return
-    
-    st.markdown("""
-    Upload gambar yang berisi teks aksara Bima, dan sistem akan mengkonversinya ke teks Latin.
-    Anda dapat langsung memproses atau crop area tertentu untuk hasil yang lebih akurat.
-    """)
     
     uploaded_file = st.file_uploader(
         "Upload gambar aksara Bima:",
@@ -1302,28 +1212,7 @@ def ocr_page():
                         
                     else:
                         st.error("❌ OCR gagal mengenali teks.")
-                        
-                        # Enhanced tips untuk perbaikan
-                        with st.expander("💡 Tips untuk Meningkatkan Hasil OCR"):
-                            col1, col2 = st.columns(2)
-                            
-                            with col1:
-                                st.markdown("""
-                                **🎯 Tips Cropping:**
-                                - Coba **centang opsi crop** untuk fokus pada area teks
-                                - Crop **hanya area teks** yang ingin dibaca
-                                - Hindari background yang rumit
-                                - Sisakan sedikit margin di sekitar teks
-                                """)
-                            
-                            with col2:
-                                st.markdown("""
-                                **📸 Tips Gambar:**
-                                - Kontras tinggi antara teks dan background
-                                - Resolusi minimal 300 DPI
-                                - Teks harus horizontal (tidak miring)
-                                - Pencahayaan merata tanpa bayangan
-                                """)
+                        st.info("💡 Coba centang 'Crop area teks' dan pilih bagian yang berisi tulisan saja")
                         
                         # Show processed image for reference
                         st.markdown("### 🔍 Gambar yang Diproses:")
