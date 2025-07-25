@@ -40,6 +40,96 @@ st.markdown("""
         font-weight: bold;
         margin-bottom: 2rem;
     }
+    button[data-testid="stBaseButton-headerNoPadding"] {
+    position: fixed !important;
+    left: 8px !important;
+    top: 8px !important;
+    z-index: 999 !important;
+    width: 55px !important;
+    height: 28px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 1px solid #FFD700 !important;
+    border-radius: 4px !important;
+    background-color: #000000 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 0 !important;
+    line-height: 1 !important;
+}
+
+/* Hide original SVG icon */
+button[data-testid="stBaseButton-headerNoPadding"] svg {
+    display: none !important;
+}
+
+/* Container untuk konten button */
+button[data-testid="stBaseButton-headerNoPadding"]::before {
+    content: "☰ Menu";
+    position: relative !important;
+    display: inline-block !important;
+    width: 100% !important;
+    height: 100% !important;
+    font-size: 10px !important;
+    font-weight: bold !important;
+    color: #FFD700 !important;
+    text-align: center !important;
+    line-height: 28px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Remove ::after to avoid conflicts */
+button[data-testid="stBaseButton-headerNoPadding"]::after {
+    display: none !important;
+}
+
+/* Hover effects */
+button[data-testid="stBaseButton-headerNoPadding"]:hover {
+    background-color: #1a1a1a !important;
+    border-color: #FFF700 !important;
+    box-shadow: 0 2px 4px rgba(255, 215, 0, 0.3) !important;
+}
+
+button[data-testid="stBaseButton-headerNoPadding"]:focus {
+    background-color: #000000 !important;
+    border-color: #FFD700 !important;
+    outline: none !important;
+}
+
+/* Responsive design untuk mobile */
+@media screen and (max-width: 768px) {
+    button[data-testid="stBaseButton-headerNoPadding"] {
+        left: 5px !important;
+        top: 5px !important;
+        width: 50px !important;
+        height: 25px !important;
+    }
+    
+    button[data-testid="stBaseButton-headerNoPadding"]::before {
+        font-size: 9px !important;
+        line-height: 25px !important;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    button[data-testid="stBaseButton-headerNoPadding"] {
+        left: 3px !important;
+        top: 3px !important;
+        width: 45px !important;
+        height: 22px !important;
+    }
+    
+    button[data-testid="stBaseButton-headerNoPadding"]::before {
+        font-size: 8px !important;
+        line-height: 22px !important;
+    }
+}
     
     body {
         background-color: #ffffff;
