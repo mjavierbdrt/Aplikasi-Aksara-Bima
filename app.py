@@ -654,7 +654,7 @@ def show_simple_ocr_guide():
         
         <p><strong>Tips untuk hasil terbaik:</strong></p>
         <p>• Foto harus jelas dan terang</p>
-        <p>• Maksimal 8 huruf dalam 1 baris</p>
+        <p>• Hany dapat membaca Teks dalam 1 baris</p>
         <p>• Jika ada banyak tulisan, centang "✂️ Crop area teks" untuk memilih bagian yang mau dibaca</p>
         </div>
         """, unsafe_allow_html=True)
@@ -1154,7 +1154,7 @@ def ocr_page():
     
     # Warning sesuai permintaan
     st.warning(
-        "⚠️ **Penting:** Untuk hasil terbaik, unggah gambar yang jelas berisi **satu baris** dengan **maksimal 8 karakter**. Serta usahakan ada jarak 2 spasi antar karakter "
+        "⚠️ **Penting:** Untuk hasil terbaik, unggah gambar yang jelas berisi **satu baris** . Serta usahakan ada jarak 2 spasi antar karakter "
     )
     st.info(
         "💡 **Tips:** Gunakan Gambar Hasil Transliterasi Latin ke Aksara Bima untuk hasil OCR lebih baik!"
