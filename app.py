@@ -22,8 +22,7 @@ except ImportError:
 
 # Konfigurasi halaman
 st.set_page_config(
-    page_title="Sistem Aksara Bima",
-    page_icon="🔤",
+    page_title="Sistem Pengenalan Aksara Bima",
     layout="wide",
     initial_sidebar_state="expanded"
 )
