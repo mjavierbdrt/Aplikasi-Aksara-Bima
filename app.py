@@ -761,7 +761,7 @@ def home_page():
     
     with col1:
         if os.path.exists(logo_url):
-            st.image(logo_url, width=120)
+            st.image(logo_url, width=150)
     
     with col2:
         st.title("Aplikasi Pengenalan Aksara Bima")
