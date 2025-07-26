@@ -923,15 +923,15 @@ def transliteration_page():
             st.markdown("---")
 
             # 4. Tampilkan gambar gabungan seluruh teks
-            st.markdown("### 🖼️ Hasil Lengkap (Satu Gambar)")
+            st.markdown("### 🖼️ Hasil Lengkap")
             st.markdown("*Seluruh teks digabungkan menjadi satu gambar panjang.*")
             
             # Buat gambar untuk seluruh kalimat
             full_image = create_full_text_image(result, char_images)
             
             if full_image:
-                # Tampilkan gambar
-                st.image(full_image, caption=f"Transliterasi lengkap untuk: {input_text}", use_column_width=True)
+                # Tampilkan gambar (FIXED LINE)
+                st.image(full_image, caption=f"Transliterasi lengkap untuk: {input_text}", use_container_width=True)
                 
                 st.markdown("---")
 
