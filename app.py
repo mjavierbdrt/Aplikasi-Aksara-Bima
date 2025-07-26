@@ -694,11 +694,11 @@ def sidebar_navigation():
     """
     Sidebar dengan tombol navigasi yang lebih menarik
     """
-    st.sidebar.title("🔤 Sistem Aksara Bima")
+    st.sidebar.title("Sistem Pengenalan Aksara Bima")
     st.sidebar.markdown("---")
     
     # Header navigasi
-    st.sidebar.markdown("### 🎯 Fitur Utama")
+    st.sidebar.markdown("### Fitur Utama")
     
     # Tombol navigasi dengan style yang menarik
     col1, col2 = st.sidebar.columns(2)
