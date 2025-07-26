@@ -208,7 +208,7 @@ def crop_image_interactive(image, key_suffix=""):
         return None
     
     st.markdown("### ✂️ Crop Gambar")
-    st.info("🎯 Drag untuk memilih area yang ingin diproses, kemudian klik tombol di bawah")
+    st.info("🎯 Drag untuk memilih area yang ingin diproses, kemudian klik tombol di bawah (Disarankan menggunakan Komputer untuk fitur Cropping)")
     
     # Cropping interface
     cropped_img = st_cropper(
