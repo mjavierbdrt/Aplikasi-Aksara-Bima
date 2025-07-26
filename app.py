@@ -1004,7 +1004,9 @@ def classification_page():
             # Fallback ke daftar teks
             st.markdown("**Daftar karakter yang didukung (mode teks):**")
             _show_character_text_list()
-    
+            
+    with st.expander("📋 Lihat Daftar Karakter dalam Teks"):
+        _show_character_text_list()
     # Pilihan input method
     input_method = st.radio(
         "Pilih cara input:",
