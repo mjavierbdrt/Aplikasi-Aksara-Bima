@@ -832,26 +832,6 @@ def home_page():
     
     st.markdown("---")
     
-    # Statistik dan informasi
-    st.markdown("## 📊 Statistik Sistem")
-    
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.metric("Total Karakter Transliterasi", len(BIMA_CHARACTERS))
-    
-    with col2:
-        st.metric("Karakter Klasifikasi", len(CLASSIFICATION_CHARACTERS))
-    
-    with col3:
-        char_images = load_character_images()
-        st.metric("Dataset Tersedia", len(char_images))
-    
-    with col4:
-        requirements = check_system_requirements()
-        ready_count = sum(requirements.values())
-        st.metric("Sistem Siap", f"{ready_count}/3")
-
 def transliteration_page():
     """
     Halaman transliterasi Latin ke Aksara Bima (SIMPLIFIED)
@@ -1283,13 +1263,6 @@ def info_page():
             st.error("❌ Model tidak ditemukan")
             st.code(f"Expected: {MODEL_PATH}")
     
-    with col3:
-        if requirements['tesseract']:
-            st.success("✅ Tesseract tersedia")
-            st.code(f"Path: {TESSERACT_CMD}")
-        else:
-            st.error("❌ Tesseract tidak ditemukan")
-            st.code(f"Expected: {TESSERACT_CMD}")
     
     st.markdown("---")
     
