@@ -980,7 +980,7 @@ def classification_page():
     # FITUR BARU: Dropdown dengan gambar daftar karakter aksara Bima
     with st.expander("🖼️ Lihat Gambar Daftar Karakter Aksara Bima"):
         # Path untuk gambar daftar karakter
-        daftar_karakter_path = os.path.join(os.path.dirname(__file__), 'daftar_karakter_bima.png')
+        daftar_karakter_path = os.path.join(os.path.dirname(__file__), 'assets/daftar_karakter_bima.png')
         
         # Cek apakah file gambar ada
         if os.path.exists(daftar_karakter_path):
@@ -1004,9 +1004,6 @@ def classification_page():
             # Fallback ke daftar teks
             st.markdown("**Daftar karakter yang didukung (mode teks):**")
             _show_character_text_list()
-    
-    with st.expander("📋 Lihat Daftar Karakter dalam Teks"):
-        _show_character_text_list()
     
     # Pilihan input method
     input_method = st.radio(
