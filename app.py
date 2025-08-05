@@ -1102,20 +1102,6 @@ def classification_page():
                 else:
                     st.success("✅ Tingkat kepercayaan tinggi. Hasil sangat akurat!")
                     
-                # Tambahan: Top 3 prediksi
-                if hasattr(model, 'predict'):
-                    try:
-                        all_predictions = model.predict(processed_image, verbose=0)[0]
-                        top_3_indices = np.argsort(all_predictions)[-3:][::-1]
-                        
-                        st.markdown("### 📋 3 Prediksi Teratas:")
-                        for i, idx in enumerate(top_3_indices):
-                            if idx < len(CLASSIFICATION_CHARACTERS):
-                                char_name = CLASSIFICATION_CHARACTERS[idx]
-                                conf = all_predictions[idx]
-                                st.write(f"{i+1}. **{char_name}** - {conf:.2%}")
-                    except:
-                        pass
                         
             else:
                 st.error("Klasifikasi gagal. Silakan coba lagi dengan gambar yang lebih jelas.")
